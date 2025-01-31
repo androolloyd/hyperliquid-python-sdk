@@ -575,3 +575,26 @@ class Exchange(API):
             signature,
             nonce,
         )
+
+    def evm_user_modify(self, using_big_blocks: bool) -> Any:
+        """Modify EVM user settings to use big or small blocks.
+        
+        Args:
+            using_big_blocks (bool): If True, directs EVM transactions to big blocks. If False, uses small blocks.
+            
+        Returns:
+            Response from the API
+        """
+        timestamp = get_timestamp_ms()
+        action = {
+            "type": "evmUserModify",
+            "usingBigBlocks": using_big_blocks
+        }
+        signature = sign_l1_action(
+            self.wallet,
+            action,
+            self.vault_address,
+            timestamp,
+            self.base_url == MAINNET_API_URL,
+        )
+        return self._post_action(action, signature, timestamp)
